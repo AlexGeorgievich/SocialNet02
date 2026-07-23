@@ -76,23 +76,23 @@ CATEGORY_MOCKS = [
     ("hana@demo.local", "Весенний перекрёсток", "Сакура на солнечной городской улице", "architecture", "06-sakura-street.jpg"),
 ]
 
-# Unique deterministic illustrations cover categories that are not represented
-# by the stock-photo demo set. "other" intentionally remains the last category.
+# Verified free-to-use Pexels images cover categories that are not represented
+# by the local demo-photo set. "other" intentionally remains the last category.
 CATEGORY_COVERAGE_MOCKS = [
-    ("akari@demo.local", "Цветовые волны", "Абстрактная цифровая иллюстрация", "artwork",
-     "illustration.svg", "#7c3aed", "#ec4899"),
-    ("rin@demo.local", "Героиня рассвета", "Эскиз нового персонажа", "waifu",
-     "character.svg", "#f97316", "#facc15"),
-    ("sophie.dubois@demo.local", "Геометрический импульс", "Ритм цвета и формы", "abstract",
-     "abstract.svg", "#0f766e", "#22d3ee"),
+    ("akari@demo.local", "Цветовой портрет", "Иллюстрация маркерами на рабочем столе", "artwork",
+     28892332),
+    ("rin@demo.local", "Героиня фестиваля", "Детализированный образ персонажа", "waifu",
+     17800015),
+    ("sophie.dubois@demo.local", "Цветовой поток", "Фактурная абстрактная живопись", "abstract",
+     1988692),
     ("lucas.meyer@demo.local", "Лис в осеннем лесу", "Рыжий лис среди золотых листьев", "animals",
-     "animals.svg", "#9a3412", "#fbbf24"),
-    ("elena.rossi@demo.local", "Летний натюрморт", "Фрукты и керамика в мягком свете", "food",
-     "food.svg", "#be123c", "#fb7185"),
-    ("noah.vandijk@demo.local", "Электрический экспресс", "Поезд будущего в ночном городе", "technology",
-     "technology.svg", "#1d4ed8", "#06b6d4"),
+     34590366),
+    ("elena.rossi@demo.local", "Классический натюрморт", "Фрукты и керамика в мягком свете", "food",
+     36913055),
+    ("noah.vandijk@demo.local", "Цифровой код", "Программный код и человек в потоке данных", "technology",
+     3861969),
     ("hana@demo.local", "Творческий блокнот", "Свободный визуальный эксперимент", "other",
-     "other.svg", "#475569", "#a78bfa"),
+     34790848),
 ]
 
 LEGACY_CATEGORY_TITLES = {
@@ -113,21 +113,6 @@ Q_PROMPTS = [
     ("Ночной город", "Город ночью, яркие огни", "Миджорни", ["город", "ночь"]),
     ("Тёплый вечер", "Уютная комната вечером", "ДАЛЛ-И", ["уют", "интерьер"]),
 ]
-
-
-def make_svg(path: Path, title: str, color1: str, color2: str, index: int) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    safe_title = title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1100" viewBox="0 0 900 1100">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="{color1}"/><stop offset="1" stop-color="{color2}"/></linearGradient></defs>
-  <rect width="900" height="1100" fill="url(#g)"/>
-  <circle cx="{180 + index * 37 % 520}" cy="{220 + index * 53 % 430}" r="210" fill="white" opacity=".13"/>
-  <circle cx="{650 - index * 29 % 430}" cy="{720 - index * 31 % 310}" r="280" fill="#160b2d" opacity=".22"/>
-  <path d="M150 790 Q450 430 750 790 L690 970 H210 Z" fill="#fff" opacity=".14"/>
-  <text x="450" y="910" text-anchor="middle" fill="white" font-family="Segoe UI,Arial" font-size="54" font-weight="700">{safe_title}</text>
-  <text x="450" y="975" text-anchor="middle" fill="white" opacity=".75" font-family="Segoe UI,Arial" font-size="25">S-ART · ДЕМО</text>
-</svg>'''
-    path.write_text(svg, encoding="utf-8")
 
 
 def get_or_create_user(db, email, first_name, last_name, description, status):
@@ -169,8 +154,9 @@ def seed():
         upload_dir = Path(__file__).parent / "uploads" / "demo"
         category_upload_dir = upload_dir / "categories"
 
-        for index, (_, title, _, _, filename, color1, color2) in enumerate(CATEGORY_COVERAGE_MOCKS):
-            make_svg(category_upload_dir / filename, title, color1, color2, index + 20)
+        if category_upload_dir.exists():
+            for placeholder in category_upload_dir.glob("*.svg"):
+                placeholder.unlink()
 
         for index, (email, title, description, category, slug, c1, c2) in enumerate(POSTS):
             photo_id = STOCK_PHOTO_IDS[index]
@@ -228,15 +214,27 @@ def seed():
                 ))
         db.flush()
 
-        for index, (email, title, description, category, filename, _, _) in enumerate(
+        for index, (email, title, description, category, photo_id) in enumerate(
             CATEGORY_COVERAGE_MOCKS
         ):
             user = users[email]
-            image_url = f"/uploads/demo/categories/{filename}"
-            post = db.query(Post).filter(Post.image_url == image_url).first()
+            image_url = (
+                f"https://images.pexels.com/photos/{photo_id}/"
+                f"pexels-photo-{photo_id}.jpeg?auto=compress&cs=tinysrgb&w=1200"
+            )
+            post = db.query(Post).filter(
+                Post.user_id == user.id,
+                Post.category == category,
+                Post.image_url.like("/uploads/demo/categories/%"),
+            ).first()
+            if not post:
+                post = db.query(Post).filter(
+                    Post.user_id == user.id,
+                    Post.image_url.like(f"%/{photo_id}/%"),
+                ).first()
             if post:
-                post.user_id, post.title = user.id, title
-                post.description, post.category = description, category
+                post.title, post.description = title, description
+                post.category, post.image_url = category, image_url
             else:
                 db.add(Post(
                     user_id=user.id,
