@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from database import get_db
 from models import Favorite, Friendship, Post, Prompt, User
 from services.auth import get_current_user
+from services.cache import cache_key, get_json, invalidate_all, set_json
 
 router = APIRouter(prefix="/api", tags=["admin"])
 
@@ -16,12 +17,18 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
 
 
 @router.get("/stats")
-def stats(db: Session = Depends(get_db)):
-    return {
+def stats(request: Request, db: Session = Depends(get_db)):
+    key = cache_key(request.state.app_mode, "stats")
+    cached = get_json(key)
+    if cached is not None:
+        return cached
+    value = {
         "users": db.query(User).count(),
         "posts": db.query(Post).count(),
         "prompts": db.query(Prompt).count(),
     }
+    set_json(key, value)
+    return value
 
 
 @router.get("/admin/users")
@@ -88,6 +95,7 @@ def delete_user(
     ).delete(synchronize_session=False)
     db.delete(user)
     db.commit()
+    invalidate_all()
     return {"detail": "Пользователь удалён"}
 
 
@@ -101,6 +109,7 @@ def admin_delete_post(
     db.query(Favorite).filter_by(item_type="post", item_id=post_id).delete()
     db.delete(post)
     db.commit()
+    invalidate_all()
     return {"detail": "Работа удалена"}
 
 
@@ -114,4 +123,5 @@ def admin_delete_prompt(
     db.query(Favorite).filter_by(item_type="prompt", item_id=prompt_id).delete()
     db.delete(prompt)
     db.commit()
+    invalidate_all()
     return {"detail": "Промпт удалён"}

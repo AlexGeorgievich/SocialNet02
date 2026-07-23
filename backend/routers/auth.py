@@ -6,6 +6,7 @@ from database import get_app_mode, get_db
 from models import User
 from schemas.user import UserCreate, UserLogin, UserResponse, Token
 from services.auth import hash_password, verify_password, create_access_token, get_current_user
+from services.cache import invalidate_all
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 PRIVACY_POLICY_VERSION = "2026-07-23"
@@ -33,6 +34,7 @@ def register(data: UserCreate, request: Request, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
+    invalidate_all()
     
     token = create_access_token(user.id, get_app_mode(request))
     return Token(access_token=token, user=UserResponse.model_validate(user))

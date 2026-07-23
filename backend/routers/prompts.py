@@ -1,19 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from typing import Optional
 from database import get_db
 from models import Prompt, User
 from schemas.prompt import PromptCreate, PromptResponse
 from services.auth import get_current_user
+from services.cache import cache_key, get_json, invalidate_all, set_json
 
 router = APIRouter(prefix="/api/prompts", tags=["prompts"])
 
 
 @router.get("", response_model=list[PromptResponse])
 def list_prompts(
+    request: Request,
     user_id: Optional[int] = Query(None),
     db: Session = Depends(get_db),
 ):
+    key = cache_key(request.state.app_mode, "prompts", user_id)
+    cached = get_json(key)
+    if cached is not None:
+        return cached
+
     q = db.query(Prompt).filter(Prompt.is_public == True)
     if user_id:
         q = db.query(Prompt).filter(Prompt.user_id == user_id)
@@ -29,7 +37,9 @@ def list_prompts(
             user_last_name=user.last_name if user else "",
             user_avatar_url=user.avatar_url if user else "",
         ))
-    return result
+    encoded = jsonable_encoder(result)
+    set_json(key, encoded)
+    return encoded
 
 
 @router.post("", response_model=PromptResponse)
@@ -49,6 +59,7 @@ def create_prompt(
     db.add(prompt)
     db.commit()
     db.refresh(prompt)
+    invalidate_all()
     return PromptResponse(
         id=prompt.id, user_id=prompt.user_id, title=prompt.title,
         content=prompt.content, model=prompt.model, tags=prompt.tags,
@@ -80,6 +91,7 @@ def copy_prompt(
     db.add(copy)
     db.commit()
     db.refresh(copy)
+    invalidate_all()
     return PromptResponse(
         id=copy.id, user_id=copy.user_id, title=copy.title,
         content=copy.content, model=copy.model, tags=copy.tags,
@@ -103,6 +115,7 @@ def delete_prompt(
         raise HTTPException(status_code=403, detail="Not authorized")
     db.delete(prompt)
     db.commit()
+    invalidate_all()
     return {"detail": "Prompt deleted"}
 
 
@@ -122,6 +135,7 @@ def update_prompt(
     prompt.tags, prompt.is_public = data.tags, data.is_public
     db.commit()
     db.refresh(prompt)
+    invalidate_all()
     return PromptResponse(
         id=prompt.id, user_id=prompt.user_id, title=prompt.title,
         content=prompt.content, model=prompt.model, tags=prompt.tags,

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Form, Query
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from typing import Optional
 from database import get_db
@@ -6,25 +7,37 @@ from models import Post, User
 from schemas.post import PostCreate, PostResponse
 from services.auth import get_current_user
 from services.upload import save_upload
+from services.cache import cache_key, get_json, invalidate_all, set_json
 
 router = APIRouter(prefix="/api/posts", tags=["posts"])
 
 
 @router.get("", response_model=list[PostResponse])
 def list_posts(
+    request: Request,
     category: Optional[str] = Query(None),
     user_id: Optional[int] = Query(None),
     db: Session = Depends(get_db),
 ):
+    key = cache_key(request.state.app_mode, "posts", category, user_id)
+    cached = get_json(key)
+    if cached is not None:
+        return cached
+
     q = db.query(Post)
     if category:
         q = q.filter(Post.category == category)
     if user_id:
         q = q.filter(Post.user_id == user_id)
     posts = q.order_by(Post.created_at.desc()).all()
+    author_ids = {post.user_id for post in posts}
+    authors = {
+        user.id: user
+        for user in db.query(User).filter(User.id.in_(author_ids)).all()
+    } if author_ids else {}
     result = []
     for p in posts:
-        user = db.query(User).filter(User.id == p.user_id).first()
+        user = authors.get(p.user_id)
         result.append(PostResponse(
             id=p.id, user_id=p.user_id, title=p.title,
             description=p.description, image_url=p.image_url,
@@ -33,7 +46,9 @@ def list_posts(
             user_last_name=user.last_name if user else "",
             user_avatar_url=user.avatar_url if user else "",
         ))
-    return result
+    encoded = jsonable_encoder(result)
+    set_json(key, encoded)
+    return encoded
 
 
 @router.post("", response_model=PostResponse)
@@ -60,6 +75,7 @@ async def create_post(
     db.add(post)
     db.commit()
     db.refresh(post)
+    invalidate_all()
     return PostResponse(
         id=post.id, user_id=post.user_id, title=post.title,
         description=post.description, image_url=post.image_url,
@@ -83,6 +99,7 @@ def delete_post(
         raise HTTPException(status_code=403, detail="Not authorized")
     db.delete(post)
     db.commit()
+    invalidate_all()
     return {"detail": "Post deleted"}
 
 
@@ -101,6 +118,7 @@ def update_post(
     post.title, post.description, post.category = data.title, data.description, data.category
     db.commit()
     db.refresh(post)
+    invalidate_all()
     return PostResponse(
         id=post.id, user_id=post.user_id, title=post.title,
         description=post.description, image_url=post.image_url,

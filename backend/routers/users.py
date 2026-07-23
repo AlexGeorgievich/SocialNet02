@@ -6,6 +6,7 @@ from models import User
 from schemas.user import UserUpdate, UserResponse
 from services.auth import get_current_user
 from services.upload import save_upload
+from services.cache import invalidate_all
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 
@@ -28,6 +29,7 @@ def update_profile(
         setattr(current_user, field, value)
     db.commit()
     db.refresh(current_user)
+    invalidate_all()
     return UserResponse.model_validate(current_user)
 
 
@@ -45,4 +47,5 @@ async def upload_avatar(
     current_user.avatar_url = url
     db.commit()
     db.refresh(current_user)
+    invalidate_all()
     return UserResponse.model_validate(current_user)

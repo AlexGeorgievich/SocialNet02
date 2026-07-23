@@ -6,3 +6,5 @@ bcrypt==5.0.0
 python-multipart==0.0.12
 aiofiles==24.1.0
 pydantic[email]==2.9.0
+psycopg[binary]==3.2.3
+redis==5.2.0

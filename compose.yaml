@@ -1,0 +1,88 @@
+name: sart
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sart}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sart-local-password}
+      POSTGRES_DB: postgres
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sart} -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    networks:
+      - backend_net
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    networks:
+      - backend_net
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      DEMO_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-sart}:${POSTGRES_PASSWORD:-sart-local-password}@postgres:5432/sart_demo
+      WORK_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-sart}:${POSTGRES_PASSWORD:-sart-local-password}@postgres:5432/sart_work
+      REDIS_URL: redis://redis:6379/0
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-30}
+      JWT_SECRET: ${JWT_SECRET:-sart-docker-local-secret-change-me}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 10
+    ports:
+      - "8000:8000"
+    networks:
+      - backend_net
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+    networks:
+      - backend_net
+
+volumes:
+  postgres_data:
+  redis_data:
+  uploads_data:
+
+networks:
+  backend_net:
+    driver: bridge
+

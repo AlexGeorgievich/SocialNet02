@@ -1,0 +1,3 @@
+CREATE DATABASE sart_demo;
+CREATE DATABASE sart_work;
+

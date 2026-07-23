@@ -1,9 +1,13 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from database import Base, demo_engine, ensure_schema, work_engine
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
+from database import Base, demo_engine, ensure_schema, get_db, work_engine
 from config import CORS_ORIGINS, UPLOAD_DIR
+from services.cache import cache_available
 
 from routers import auth, users, posts, prompts, friends, favorites, admin
 
@@ -33,8 +37,13 @@ app.include_router(admin.router)
 
 
 @app.get("/api/health")
-def health():
-    return {"status": "ok"}
+def health(db: Session = Depends(get_db)):
+    db.execute(text("SELECT 1"))
+    return {
+        "status": "ok",
+        "database": "ok",
+        "cache": "ok" if cache_available() else "unavailable",
+    }
 
 
 if __name__ == "__main__":

@@ -59,11 +59,13 @@ Q_POSTS = [
     ("Ночной переулок", "Фонари и рестораны Токио", "maid", "night-hero", "#111827", "#db2777"),
     ("Дождливый Токио", "Зонты и мокрый асфальт", "maid", "tea-story", "#92400e", "#f59e0b"),
     ("Неон Акихабары", "Витрины и прохожие ночью", "maid", "maid-lu", "#6d28d9", "#f472b6"),
+    ("Террасы в горах", "Зелёные рисовые поля в утреннем свете", "nature", "terraces", "#166534", "#a3e635"),
 ]
 
 Q_STOCK_IMAGES = [
     "01-neon-tokyo.jpg", "02-tokyo-night.jpg",
     "03-rainy-tokyo.jpg", "04-vibrant-night.jpg",
+    "11-user-terraces.jpg",
 ]
 
 CATEGORY_MOCKS = [
@@ -127,6 +129,24 @@ def seed():
     db = SessionLocal()
     try:
         users = {item[0]: get_or_create_user(db, *item) for item in DEMO_USERS}
+        demo_admin = db.query(User).filter(User.email == "q@q.com").first()
+        if not demo_admin:
+            demo_admin = User(
+                email="q@q.com",
+                password_hash=hash_password("tester"),
+                first_name="q",
+                last_name="q",
+                description="Администратор демонстрационного пространства",
+                status="online",
+                role="admin",
+                privacy_consent=True,
+                privacy_consent_version="2026-07-23",
+                privacy_consent_at=datetime.now(timezone.utc),
+            )
+            db.add(demo_admin)
+            db.flush()
+        else:
+            demo_admin.role = "admin"
         upload_dir = Path(__file__).parent / "uploads" / "demo"
 
         for index, (email, title, description, category, slug, c1, c2) in enumerate(POSTS):

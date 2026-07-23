@@ -1,0 +1,12 @@
+.git/
+.agents/
+**/__pycache__/
+**/*.py[cod]
+frontend/node_modules/
+frontend/dist/
+backend/database.db
+backend/database.work.db
+backend/uploads/posts/
+backend/uploads/avatars/
+*.log
+

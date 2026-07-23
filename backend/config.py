@@ -14,6 +14,8 @@ UPLOAD_DIR = BASE_DIR / "uploads"
 JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-local-development")
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+CACHE_TTL_SECONDS = int(os.getenv("CACHE_TTL_SECONDS", "30"))
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
