@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1100" viewBox="0 0 900 1100">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dc2626"/><stop offset="1" stop-color="#fbbf24"/></linearGradient></defs>
+  <rect width="900" height="1100" fill="url(#g)"/>
+  <circle cx="550" cy="320" r="210" fill="white" opacity=".13"/>
+  <circle cx="360" cy="720" r="280" fill="#160b2d" opacity=".22"/>
+  <path d="M150 790 Q450 430 750 790 L690 970 H210 Z" fill="#fff" opacity=".14"/>
+  <text x="450" y="910" text-anchor="middle" fill="white" font-family="Segoe UI,Arial" font-size="54" font-weight="700">Летний фестиваль</text>
+  <text x="450" y="975" text-anchor="middle" fill="white" opacity=".75" font-family="Segoe UI,Arial" font-size="25">S-ART · ДЕМО</text>
+</svg>
