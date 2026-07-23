@@ -76,6 +76,25 @@ CATEGORY_MOCKS = [
     ("hana@demo.local", "Весенний перекрёсток", "Сакура на солнечной городской улице", "architecture", "06-sakura-street.jpg"),
 ]
 
+# Unique deterministic illustrations cover categories that are not represented
+# by the stock-photo demo set. "other" intentionally remains the last category.
+CATEGORY_COVERAGE_MOCKS = [
+    ("akari@demo.local", "Цветовые волны", "Абстрактная цифровая иллюстрация", "artwork",
+     "illustration.svg", "#7c3aed", "#ec4899"),
+    ("rin@demo.local", "Героиня рассвета", "Эскиз нового персонажа", "waifu",
+     "character.svg", "#f97316", "#facc15"),
+    ("sophie.dubois@demo.local", "Геометрический импульс", "Ритм цвета и формы", "abstract",
+     "abstract.svg", "#0f766e", "#22d3ee"),
+    ("lucas.meyer@demo.local", "Лис в осеннем лесу", "Рыжий лис среди золотых листьев", "animals",
+     "animals.svg", "#9a3412", "#fbbf24"),
+    ("elena.rossi@demo.local", "Летний натюрморт", "Фрукты и керамика в мягком свете", "food",
+     "food.svg", "#be123c", "#fb7185"),
+    ("noah.vandijk@demo.local", "Электрический экспресс", "Поезд будущего в ночном городе", "technology",
+     "technology.svg", "#1d4ed8", "#06b6d4"),
+    ("hana@demo.local", "Творческий блокнот", "Свободный визуальный эксперимент", "other",
+     "other.svg", "#475569", "#a78bfa"),
+]
+
 LEGACY_CATEGORY_TITLES = {
     "Зелёные террасы", "Морская принцесса", "Синяя героиня",
     "Квартал ночью", "Тихий переулок", "Неоновые линии",
@@ -148,6 +167,10 @@ def seed():
         else:
             demo_admin.role = "admin"
         upload_dir = Path(__file__).parent / "uploads" / "demo"
+        category_upload_dir = upload_dir / "categories"
+
+        for index, (_, title, _, _, filename, color1, color2) in enumerate(CATEGORY_COVERAGE_MOCKS):
+            make_svg(category_upload_dir / filename, title, color1, color2, index + 20)
 
         for index, (email, title, description, category, slug, c1, c2) in enumerate(POSTS):
             photo_id = STOCK_PHOTO_IDS[index]
@@ -202,6 +225,26 @@ def seed():
                     user_id=user.id, title=title, description=description,
                     category=category, image_url=image_url,
                     created_at=datetime.now(timezone.utc) - timedelta(minutes=index + 1),
+                ))
+        db.flush()
+
+        for index, (email, title, description, category, filename, _, _) in enumerate(
+            CATEGORY_COVERAGE_MOCKS
+        ):
+            user = users[email]
+            image_url = f"/uploads/demo/categories/{filename}"
+            post = db.query(Post).filter(Post.image_url == image_url).first()
+            if post:
+                post.user_id, post.title = user.id, title
+                post.description, post.category = description, category
+            else:
+                db.add(Post(
+                    user_id=user.id,
+                    title=title,
+                    description=description,
+                    category=category,
+                    image_url=image_url,
+                    created_at=datetime.now(timezone.utc) - timedelta(minutes=10 + index),
                 ))
         db.flush()
 

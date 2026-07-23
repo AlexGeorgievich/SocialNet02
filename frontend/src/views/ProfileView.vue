@@ -41,13 +41,9 @@
           <input v-model="postForm.title" class="input" placeholder="Название" required />
           <textarea v-model="postForm.description" class="input" placeholder="Короткое описание"></textarea>
           <select v-model="postForm.category" class="input">
-            <option value="artwork">Иллюстрации</option><option value="waifu">Персонажи</option>
-            <option value="maid">Городские сюжеты</option><option value="other">Прочее</option>
-            <option value="nature">Природа и пейзажи</option>
-            <option value="fantasy">Фэнтези</option>
-            <option value="portrait">Портреты</option>
-            <option value="architecture">Архитектура и интерьеры</option>
-            <option value="abstract">Абстракция и эксперименты</option>
+            <option v-for="category in POST_CATEGORIES" :key="category.value" :value="category.value">
+              {{ category.label }}
+            </option>
           </select>
           <input v-if="!editingId" ref="postFile" type="file" class="input" accept=".jpg,.jpeg,.png,.gif,.webp,.avif" required />
           <p class="form-hint">JPG, PNG, GIF, WebP или AVIF, до 10 МБ</p>
@@ -146,6 +142,7 @@ import { useFriendsStore } from '../stores/friends'
 import api from '../composables/useApi'
 import PostCard from '../components/PostCard.vue'
 import PromptCard from '../components/PromptCard.vue'
+import { POST_CATEGORIES } from '../constants/categories'
 
 const route = useRoute()
 const auth = useAuthStore()

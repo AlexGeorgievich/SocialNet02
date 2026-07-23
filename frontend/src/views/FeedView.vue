@@ -40,6 +40,7 @@ import { ref, onMounted, watch } from 'vue'
 import { usePostsStore } from '../stores/posts'
 import { useFavoritesStore } from '../stores/favorites'
 import PostCard from '../components/PostCard.vue'
+import { POST_CATEGORIES } from '../constants/categories'
 
 const postsStore = usePostsStore()
 const favoritesStore = useFavoritesStore()
@@ -48,15 +49,7 @@ const activeCategory = ref('')
 
 const categories = [
   { label: 'Все', value: '' },
-  { label: 'Иллюстрации', value: 'artwork' },
-  { label: 'Персонажи', value: 'waifu' },
-  { label: 'Городские сюжеты', value: 'maid' },
-  { label: 'Прочее', value: 'other' },
-  { label: 'Природа и пейзажи', value: 'nature' },
-  { label: 'Фэнтези', value: 'fantasy' },
-  { label: 'Портреты', value: 'portrait' },
-  { label: 'Архитектура и интерьеры', value: 'architecture' },
-  { label: 'Абстракция и эксперименты', value: 'abstract' },
+  ...POST_CATEGORIES,
 ]
 
 function setCategory(cat) {

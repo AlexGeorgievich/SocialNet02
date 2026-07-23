@@ -70,6 +70,7 @@
 
 <script setup>
 import { computed, onBeforeUnmount, ref } from 'vue'
+import { categoryLabel as getCategoryLabel } from '../constants/categories'
 
 const props = defineProps({
   post: Object,
@@ -105,17 +106,7 @@ const initials = computed(() => {
   return (f + l).toUpperCase() || '?'
 })
 
-const categoryLabel = computed(() => ({
-  artwork: 'Иллюстрации',
-  waifu: 'Персонажи',
-  maid: 'Городские сюжеты',
-  other: 'Прочее',
-  nature: 'Природа и пейзажи',
-  fantasy: 'Фэнтези',
-  portrait: 'Портреты',
-  architecture: 'Архитектура и интерьеры',
-  abstract: 'Абстракция и эксперименты',
-}[props.post.category] || props.post.category))
+const categoryLabel = computed(() => getCategoryLabel(props.post.category))
 </script>
 
 <style scoped>
