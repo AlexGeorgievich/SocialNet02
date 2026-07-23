@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
-from database import get_db
+from database import get_app_mode, get_db
 from models import User
 from schemas.user import UserCreate, UserLogin, UserResponse, Token
 from services.auth import hash_password, verify_password, create_access_token, get_current_user
@@ -12,7 +12,7 @@ PRIVACY_POLICY_VERSION = "2026-07-23"
 
 
 @router.post("/register", response_model=Token)
-def register(data: UserCreate, db: Session = Depends(get_db)):
+def register(data: UserCreate, request: Request, db: Session = Depends(get_db)):
     if data.privacy_consent is not True:
         raise HTTPException(
             status_code=400,
@@ -34,17 +34,17 @@ def register(data: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
     
-    token = create_access_token(user.id)
+    token = create_access_token(user.id, get_app_mode(request))
     return Token(access_token=token, user=UserResponse.model_validate(user))
 
 
 @router.post("/login", response_model=Token)
-def login(data: UserLogin, db: Session = Depends(get_db)):
+def login(data: UserLogin, request: Request, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
-    token = create_access_token(user.id)
+    token = create_access_token(user.id, get_app_mode(request))
     return Token(access_token=token, user=UserResponse.model_validate(user))
 
 

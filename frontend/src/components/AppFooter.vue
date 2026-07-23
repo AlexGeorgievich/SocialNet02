@@ -1,6 +1,10 @@
 <template>
   <footer class="app-footer">
     <div class="footer-inner">
+      <div class="mode-switch" aria-label="Режим приложения">
+        <button :class="{ active: appMode === 'demo' }" @click="setAppMode('demo')">Демо</button>
+        <button :class="{ active: appMode === 'work' }" @click="setAppMode('work')">Рабочий</button>
+      </div>
       <span>Пользователей: <b>{{ stats.users }}</b></span>
       <span>Постов: <b>{{ stats.posts }}</b></span>
       <span>Промптов: <b>{{ stats.prompts }}</b></span>
@@ -99,10 +103,12 @@
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import api from '../composables/useApi'
 import { useAuthStore } from '../stores/auth'
+import { useAppMode } from '../composables/useAppMode'
 
 const stats = reactive({ users: 0, posts: 0, prompts: 0 })
 const helpOpen = ref(false)
 const auth = useAuthStore()
+const { appMode, setAppMode } = useAppMode()
 
 async function loadStats() {
   const response = await api.get('/stats')
@@ -127,6 +133,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKey))
 <style scoped>
 .app-footer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; background: var(--header-bg); border-top: 1px solid var(--glass-border); backdrop-filter: blur(20px); }
 .footer-inner { max-width: 1200px; height: 42px; margin: auto; padding: 0 24px; display: flex; align-items: center; gap: 24px; color: var(--text-secondary); font-size: 12px; }
+.mode-switch { display: inline-flex; padding: 2px; border: 1px solid var(--glass-border); border-radius: 8px; background: var(--glass); }
+.mode-switch button { padding: 3px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--text-secondary); font: inherit; cursor: pointer; }
+.mode-switch button.active { background: var(--accent-purple); color: white; }
 .help-button { margin-left: auto; border: 0; background: transparent; color: var(--text-primary); cursor: pointer; }
 .privacy-link { color: var(--text-secondary); text-decoration: none; white-space: nowrap; }
 .privacy-link:hover { color: var(--accent-purple); }

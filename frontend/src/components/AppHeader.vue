@@ -4,6 +4,7 @@
       <router-link to="/" class="logo">
         <span class="logo-icon">&#x2728;</span>
         <span class="logo-text">S-Art</span>
+        <span class="mode-badge" :class="appMode">{{ appMode === 'demo' ? 'Демо' : 'Рабочий' }}</span>
       </router-link>
 
       <nav class="nav">
@@ -44,11 +45,13 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useTheme } from '../composables/useTheme'
 import { useFriendsStore } from '../stores/friends'
+import { useAppMode } from '../composables/useAppMode'
 
 const auth = useAuthStore()
 const router = useRouter()
 const { isDark, toggleTheme } = useTheme()
 const friends = useFriendsStore()
+const { appMode } = useAppMode()
 
 onMounted(() => friends.fetchRequests())
 
@@ -106,6 +109,10 @@ function handleLogout() {
 .logo-icon {
   font-size: 24px;
 }
+
+.mode-badge { padding: 3px 7px; border-radius: 10px; font-size: 10px; line-height: 1; color: white; -webkit-text-fill-color: initial; }
+.mode-badge.demo { background: #7c3aed; }
+.mode-badge.work { background: #059669; }
 
 .nav {
   display: flex;

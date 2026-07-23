@@ -20,6 +20,7 @@ frontend/dist/
 
 # Runtime data
 backend/database.db
+backend/database.work.db
 backend/uploads/posts/
 backend/uploads/avatars/
 *.log
@@ -29,4 +30,3 @@ backend/uploads/avatars/
 .vscode/
 .DS_Store
 Thumbs.db
-

@@ -2,13 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from database import engine, Base, ensure_schema
+from database import Base, demo_engine, ensure_schema, work_engine
 from config import CORS_ORIGINS, UPLOAD_DIR
 
 from routers import auth, users, posts, prompts, friends, favorites, admin
 
-ensure_schema()
-Base.metadata.create_all(bind=engine)
+for database_engine in (demo_engine, work_engine):
+    ensure_schema(database_engine)
+    Base.metadata.create_all(bind=database_engine)
 
 app = FastAPI(title="S-Art API")
 
