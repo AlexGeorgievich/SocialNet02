@@ -21,6 +21,8 @@
         <button
           class="gui-toggle"
           type="button"
+          :disabled="isSwitchingGui"
+          :aria-busy="isSwitchingGui"
           :title="isGallery ? 'Вернуть классический интерфейс' : 'Открыть интерфейс цифровой галереи'"
           @click="toggleGuiStyle"
         >
@@ -62,7 +64,7 @@ const router = useRouter()
 const { isDark, toggleTheme } = useTheme()
 const friends = useFriendsStore()
 const { appMode } = useAppMode()
-const { isGallery, toggleGuiStyle } = useGuiStyle()
+const { isGallery, isSwitchingGui, toggleGuiStyle } = useGuiStyle()
 
 onMounted(() => friends.fetchRequests())
 
@@ -177,6 +179,7 @@ function handleLogout() {
 
 .theme-toggle:hover,
 .gui-toggle:hover { border-color: var(--accent-purple); }
+.gui-toggle:disabled { opacity: .65; cursor: wait; }
 
 .user-menu {
   text-decoration: none;

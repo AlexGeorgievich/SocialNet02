@@ -65,6 +65,19 @@
   box-sizing: border-box;
 }
 
+/* Prevent expensive transitions while masonry and grid layouts are exchanged. */
+:root.gui-switching *,
+:root.gui-switching *::before,
+:root.gui-switching *::after {
+  animation: none !important;
+  scroll-behavior: auto !important;
+  transition: none !important;
+}
+
+:root.gui-switching .main-content {
+  visibility: hidden;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background: var(--bg-primary);
@@ -120,6 +133,10 @@ body::before {
   background: var(--bg-card-hover);
   border-color: rgba(168, 85, 247, 0.3);
   box-shadow: var(--shadow-glow);
+}
+
+.feed-page .post-card {
+  backdrop-filter: none;
 }
 
 .btn {
@@ -358,6 +375,10 @@ textarea.input {
 
 :root[data-gui='gallery'] .glass-card {
   backdrop-filter: blur(14px);
+}
+
+:root[data-gui='gallery'] .feed-page .post-card {
+  backdrop-filter: none;
 }
 
 :root[data-gui='gallery'] .feed-page .filters {
