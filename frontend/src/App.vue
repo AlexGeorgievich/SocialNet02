@@ -13,8 +13,10 @@ import { onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
 import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
+import { useGuiStyle } from './composables/useGuiStyle'
 
 const auth = useAuthStore()
+useGuiStyle()
 
 onMounted(() => {
   if (auth.isLoggedIn) auth.fetchMe()

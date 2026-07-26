@@ -1,6 +1,12 @@
 <template>
   <div class="feed-page">
-    <h1 class="page-title">Лента</h1>
+    <div class="feed-heading">
+      <div>
+        <span class="feed-kicker">Открытая коллекция</span>
+        <h1 class="page-title">Лента</h1>
+      </div>
+      <router-link to="/profile" class="btn btn-primary add-art-button">＋ Добавить своё</router-link>
+    </div>
 
     <div class="filters glass-card">
       <button
@@ -75,6 +81,25 @@ function handleFavorite(postId) {
 </script>
 
 <style scoped>
+.feed-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.feed-kicker {
+  display: none;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.add-art-button { margin-bottom: 24px; }
+
 .filters {
   display: flex;
   gap: 8px;
@@ -105,5 +130,18 @@ function handleFavorite(postId) {
   background: var(--gradient-main);
   color: white;
   border-color: transparent;
+}
+
+:global(:root[data-gui='classic']) .feed-heading .add-art-button {
+  display: none;
+}
+
+:global(:root[data-gui='gallery']) .feed-kicker {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .feed-heading { align-items: flex-start; }
+  .add-art-button { padding: 9px 12px; }
 }
 </style>
