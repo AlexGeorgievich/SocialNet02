@@ -13,7 +13,7 @@
     <div v-if="postsStore.loading" class="design-loading">Раскладываем работы на холсте…</div>
     <div v-else-if="!postsStore.posts.length" class="design-empty">На этой странице альбома пока пусто.</div>
     <div v-else class="canvas-grid">
-      <PostCard v-for="(post,index) in postsStore.posts" :key="post.id" :post="post" :class="`tilt-${index % 3}`" :favorited="favoritesStore.isFavorited(post.id, 'post')" @favorite="toggleFavorite" />
+      <PostCard v-for="(post,index) in postsStore.posts" :key="post.id" :post="post" :navigation-posts="postsStore.posts" :class="`tilt-${index % 3}`" :favorited="favoritesStore.isFavorited(post.id, 'post')" @favorite="toggleFavorite" />
     </div>
   </section>
 </template>

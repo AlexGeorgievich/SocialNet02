@@ -55,18 +55,37 @@
       class="image-lightbox"
       role="dialog"
       aria-modal="true"
-      :aria-label="`Увеличенное изображение: ${post.title}`"
+      :aria-label="`Увеличенное изображение: ${lightboxPost.title}`"
       @click.self="closeImage"
     >
       <button class="lightbox-close" type="button" aria-label="Закрыть" @click="closeImage">×</button>
+      <button
+        v-if="canNavigate"
+        class="lightbox-nav lightbox-prev"
+        type="button"
+        aria-label="Предыдущая работа"
+        title="Предыдущая работа (←)"
+        @click.stop="showAdjacent(-1)"
+      >&lt;&lt;</button>
       <img
-        :src="post.image_url"
+        :src="lightboxPost.image_url"
         class="lightbox-image"
-        :alt="post.title"
+        :alt="lightboxPost.title"
         title="Нажмите, чтобы свернуть"
         @click="closeImage"
       />
-      <div class="lightbox-caption">{{ post.title }}</div>
+      <button
+        v-if="canNavigate"
+        class="lightbox-nav lightbox-next"
+        type="button"
+        aria-label="Следующая работа"
+        title="Следующая работа (→)"
+        @click.stop="showAdjacent(1)"
+      >&gt;&gt;</button>
+      <div class="lightbox-caption">
+        <b>{{ lightboxPost.title }}</b>
+        <span v-if="canNavigate">{{ lightboxIndex + 1 }} / {{ lightboxPosts.length }} · {{ getCategoryLabel(lightboxPost.category) }}</span>
+      </div>
     </div>
   </Teleport>
 </template>
@@ -80,12 +99,30 @@ const props = defineProps({
   showDelete: Boolean,
   showEdit: Boolean,
   favorited: Boolean,
+  navigationPosts: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 defineEmits(['favorite', 'delete', 'edit'])
 const imageOpen = ref(false)
+const lightboxPost = ref(props.post)
+
+const lightboxPosts = computed(() => {
+  const source = props.navigationPosts.length ? props.navigationPosts : [props.post]
+  return source.filter(item => item?.image_url)
+})
+
+const lightboxIndex = computed(() => {
+  const index = lightboxPosts.value.findIndex(item => item.id === lightboxPost.value?.id)
+  return index < 0 ? 0 : index
+})
+
+const canNavigate = computed(() => lightboxPosts.value.length > 1)
 
 function openImage() {
+  lightboxPost.value = props.post
   imageOpen.value = true
   document.body.style.overflow = 'hidden'
   window.addEventListener('keydown', handleLightboxKey)
@@ -99,6 +136,21 @@ function closeImage() {
 
 function handleLightboxKey(event) {
   if (event.key === 'Escape') closeImage()
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault()
+    showAdjacent(-1)
+  }
+  if (event.key === 'ArrowRight') {
+    event.preventDefault()
+    showAdjacent(1)
+  }
+}
+
+function showAdjacent(direction) {
+  if (!canNavigate.value) return
+  const count = lightboxPosts.value.length
+  const nextIndex = (lightboxIndex.value + direction + count) % count
+  lightboxPost.value = lightboxPosts.value[nextIndex]
 }
 
 onBeforeUnmount(closeImage)
@@ -280,6 +332,28 @@ const absoluteTime = computed(() => {
   cursor: zoom-out;
 }
 
+.lightbox-nav {
+  position: fixed;
+  top: 50%;
+  z-index: 1;
+  min-width: 58px;
+  height: 58px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(20,14,28,.78);
+  font: 800 18px/1 inherit;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background .2s ease, transform .2s ease;
+}
+.lightbox-nav:hover {
+  background: #a855f7;
+  transform: translateY(-50%) scale(1.08);
+}
+.lightbox-prev { left: 22px; }
+.lightbox-next { right: 22px; }
+
 .lightbox-close {
   position: fixed;
   top: 18px;
@@ -303,5 +377,17 @@ const absoluteTime = computed(() => {
   color: white;
   text-align: center;
   font-size: 14px;
+}
+.lightbox-caption b,
+.lightbox-caption span { display:block; }
+.lightbox-caption span { margin-top:4px; color:#c9bdd8; font-size:12px; }
+
+@media (max-width: 700px) {
+  .image-lightbox { padding: 70px 10px 90px; }
+  .lightbox-nav { top:auto; bottom:18px; width:52px; height:52px; transform:none; }
+  .lightbox-nav:hover { transform:scale(1.05); }
+  .lightbox-prev { left:18px; }
+  .lightbox-next { right:18px; }
+  .lightbox-caption { bottom:32px; left:82px; right:82px; }
 }
 </style>

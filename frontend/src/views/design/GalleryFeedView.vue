@@ -12,7 +12,7 @@
     <div v-if="postsStore.loading" class="design-loading">Подготовка экспозиции…</div>
     <div v-else-if="!postsStore.posts.length" class="design-empty">В этой экспозиции пока нет работ.</div>
     <div v-else class="gallery-grid">
-      <PostCard v-for="post in postsStore.posts" :key="post.id" :post="post" :favorited="favoritesStore.isFavorited(post.id, 'post')" @favorite="toggleFavorite" />
+      <PostCard v-for="post in postsStore.posts" :key="post.id" :post="post" :navigation-posts="postsStore.posts" :favorited="favoritesStore.isFavorited(post.id, 'post')" @favorite="toggleFavorite" />
     </div>
   </section>
 </template>

@@ -28,6 +28,7 @@
         v-for="post in postsStore.posts"
         :key="post.id"
         :post="post"
+        :navigation-posts="postsStore.posts"
         :favorited="favoritesStore.isFavorited(post.id, 'post')"
         @favorite="handleFavorite"
       />
