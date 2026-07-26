@@ -108,6 +108,17 @@ EUROPE_POSTS = [
     ("lucas.meyer@demo.local", "Солнечный Амстердам", "Лодки у набережной", "architecture", 18936486),
 ]
 
+# Urban stories for the category carousel. Each mock has a distinct verified
+# free-to-use Pexels photo and belongs to an existing demo user.
+CITY_STORY_MOCKS = [
+    ("lucas.meyer@demo.local", "Берлинская перспектива", "Историческая улица и телебашня Берлина", "maid", 15348624),
+    ("noah.vandijk@demo.local", "Осень в Берлине", "Спокойная улица с классическими фасадами", "maid", 18757153),
+    ("sophie.dubois@demo.local", "Лондонский ритм", "Красный автобус и Биг-Бен в городском потоке", "maid", 28701636),
+    ("elena.rossi@demo.local", "Рим в сумерках", "Живая улица рядом с Колизеем", "maid", 16594748),
+    ("akari@demo.local", "Стамбул и Босфор", "Городская улица спускается к воде", "maid", 33327967),
+    ("rin@demo.local", "Дорога к Галате", "Вечерняя улица у Галатской башни", "maid", 10370090),
+]
+
 Q_PROMPTS = [
     ("Синий портрет", "Портрет в синем свете", "Стабильная диффузия", ["портрет", "свет"]),
     ("Ночной город", "Город ночью, яркие огни", "Миджорни", ["город", "ночь"]),
@@ -266,6 +277,26 @@ def seed():
                     user_id=user.id, title=title, description=description,
                     category=category, image_url=image_url,
                     created_at=datetime.now(timezone.utc) - timedelta(minutes=30 + index),
+                ))
+        db.flush()
+
+        for index, (email, title, description, category, photo_id) in enumerate(CITY_STORY_MOCKS):
+            user = users[email]
+            image_url = (
+                f"https://images.pexels.com/photos/{photo_id}/"
+                f"pexels-photo-{photo_id}.jpeg?auto=compress&cs=tinysrgb&w=1200"
+            )
+            post = db.query(Post).filter(Post.user_id == user.id, Post.title == title).first()
+            if post:
+                post.description, post.category, post.image_url = description, category, image_url
+            else:
+                db.add(Post(
+                    user_id=user.id,
+                    title=title,
+                    description=description,
+                    category=category,
+                    image_url=image_url,
+                    created_at=datetime.now(timezone.utc) - timedelta(minutes=40 + index),
                 ))
         db.flush()
 
