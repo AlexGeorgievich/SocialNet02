@@ -1,7 +1,6 @@
 <template>
   <section class="gallery-page">
     <DesignSwitcher />
-    <div class="gallery-lights" aria-hidden="true"><i></i><i></i><i></i></div>
     <header class="gallery-hero">
       <div><span>Кураторская лента · S-Art</span><h1>Digital Gallery</h1></div>
       <router-link to="/profile" class="gallery-add">Добавить работу ↗</router-link>
@@ -84,81 +83,5 @@ onMounted(() => saveDesign('gallery'))
 :global(:root[data-theme='light']) .gallery-grid :deep(.post-meta time) { color:#5e565d; }
 :global(:root:not([data-theme='light'])) .gallery-page { color-scheme:dark; }
 :global(:root:not([data-theme='light'])) .gallery-grid :deep(.post-meta time) { color:#b7acb8; }
-
-/* Exhibition hall: skylit white cube by day, spotlit charcoal room by night. */
-.gallery-page {
-  position:relative;
-  overflow:hidden;
-  border:1px solid #cbc6be;
-  background-image:
-    linear-gradient(90deg, transparent 0 32%, rgba(70,65,62,.055) 32.1% 32.25%, transparent 32.35% 66%, rgba(70,65,62,.055) 66.1% 66.25%, transparent 66.35%),
-    linear-gradient(#eeece7, #dedbd5);
-  box-shadow:inset 0 30px 60px rgba(255,255,255,.72);
-}
-.gallery-page > * { position:relative; z-index:2; }
-.gallery-lights {
-  position:absolute;
-  z-index:1;
-  top:64px;
-  left:0;
-  right:0;
-  display:flex;
-  justify-content:space-around;
-  pointer-events:none;
-}
-.gallery-lights i {
-  display:block;
-  width:28%;
-  height:260px;
-  background:linear-gradient(165deg,rgba(255,255,255,.72),transparent 64%);
-  clip-path:polygon(43% 0,57% 0,100% 100%,0 100%);
-}
-.gallery-hero {
-  margin:12px 0 26px;
-  padding:42px 30px 34px;
-  border:1px solid #c9c4bc;
-  background:#f9f8f5;
-  box-shadow:0 14px 35px rgba(42,38,35,.08);
-}
-.gallery-hero h1 { color:#1f1d20; }
-.gallery-grid { gap:30px 24px; padding:12px 10px 34px; }
-.gallery-grid :deep(.post-card) {
-  padding:12px;
-  border:1px solid #bcb6ad;
-  background:#fdfcf9;
-  box-shadow:0 12px 24px rgba(50,45,42,.12);
-}
-.gallery-grid :deep(.post-image-wrap) {
-  border:8px solid #eeeae3;
-  outline:1px solid #c7c0b7;
-  box-shadow:inset 0 0 0 1px #fff;
-}
-
-:global(:root:not([data-theme='light'])) .gallery-page {
-  border-color:#343237;
-  background-image:
-    linear-gradient(90deg,transparent 0 32%,rgba(255,255,255,.025) 32.1% 32.25%,transparent 32.35% 66%,rgba(255,255,255,.025) 66.1% 66.25%,transparent 66.35%),
-    linear-gradient(#1b1a1e,#111114);
-  box-shadow:inset 0 30px 70px rgba(0,0,0,.72);
-}
-:global(:root:not([data-theme='light'])) .gallery-lights i {
-  background:linear-gradient(165deg,rgba(255,225,166,.2),transparent 66%);
-}
-:global(:root:not([data-theme='light'])) .gallery-hero {
-  border-color:#454148;
-  background:#211f24;
-  box-shadow:0 18px 42px rgba(0,0,0,.35);
-}
-:global(:root:not([data-theme='light'])) .gallery-hero h1 { color:#f4efe8; }
-:global(:root:not([data-theme='light'])) .gallery-grid :deep(.post-card) {
-  border-color:#4a464d;
-  background:#201e23;
-  box-shadow:0 16px 34px rgba(0,0,0,.46);
-}
-:global(:root:not([data-theme='light'])) .gallery-grid :deep(.post-image-wrap) {
-  border-color:#302d33;
-  outline-color:#5a555e;
-  box-shadow:0 0 28px rgba(255,205,126,.09);
-}
 @media(max-width:650px){.gallery-page{margin:-8px;padding:12px}.gallery-hero{align-items:flex-start;flex-direction:column}.gallery-grid{grid-template-columns:1fr}}
 </style>
