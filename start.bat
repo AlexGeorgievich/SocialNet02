@@ -22,10 +22,14 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [1/2] Building and starting PostgreSQL, Redis, backend and frontend...
-docker compose up -d --build
+echo [1/2] Starting PostgreSQL, Redis, backend and frontend from local images...
+docker compose up -d --no-build
 if errorlevel 1 (
-    echo ERROR: Failed to start Docker services.
+    echo.
+    echo ERROR: Local S-Art images are missing or damaged.
+    echo The application cannot be built while Docker Hub DNS is unavailable.
+    echo When Internet access is restored, run:
+    echo   docker compose up -d --build
     pause
     exit /b 1
 )
