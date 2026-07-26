@@ -151,6 +151,7 @@ def seed():
             db.flush()
         else:
             demo_admin.role = "admin"
+            demo_admin.password_hash = hash_password("tester")
         upload_dir = Path(__file__).parent / "uploads" / "demo"
         category_upload_dir = upload_dir / "categories"
 

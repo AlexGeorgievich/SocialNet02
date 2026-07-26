@@ -6,6 +6,19 @@
         <h1>Вход в S-Art</h1>
         <p>Добро пожаловать!</p>
       </div>
+      <div class="mode-selector" aria-label="Контур приложения">
+        <button type="button" :class="{ active: appMode === 'demo' }" @click="selectMode('demo')">
+          Демо
+        </button>
+        <button type="button" :class="{ active: appMode === 'work' }" @click="selectMode('work')">
+          Рабочий
+        </button>
+      </div>
+      <p class="mode-hint">
+        {{ appMode === 'demo'
+          ? 'Демонстрационные пользователи и тестовое наполнение'
+          : 'Изолированная рабочая база без демонстрационных аккаунтов' }}
+      </p>
       <form @submit.prevent="handleLogin" class="auth-form">
         <div class="form-group">
           <label>Email</label>
@@ -31,9 +44,11 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useAppMode } from '../composables/useAppMode'
 
 const auth = useAuthStore()
 const router = useRouter()
+const { appMode, setAppMode } = useAppMode()
 
 const form = ref({ email: '', password: '' })
 const error = ref('')
@@ -43,13 +58,24 @@ async function handleLogin() {
   error.value = ''
   loading.value = true
   try {
+    const email = form.value.email.trim().toLowerCase()
+    if (email === 'q@q.com' || email.endsWith('@demo.local')) {
+      setAppMode('demo', false)
+    }
     await auth.login(form.value)
     router.push('/')
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Ошибка входа'
+    error.value = e.response?.status === 401
+      ? `Неверный email или пароль в контуре «${appMode.value === 'demo' ? 'Демо' : 'Рабочий'}»`
+      : e.response?.data?.detail || 'Ошибка входа'
   } finally {
     loading.value = false
   }
+}
+
+function selectMode(mode) {
+  error.value = ''
+  setAppMode(mode, false)
 }
 </script>
 
@@ -97,6 +123,43 @@ async function handleLogin() {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.mode-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 8px;
+  padding: 4px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: var(--glass);
+}
+
+.mode-selector button {
+  padding: 9px 12px;
+  border: 0;
+  border-radius: calc(var(--radius-sm) - 3px);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mode-selector button.active {
+  background: var(--gradient-main);
+  color: #fff;
+}
+
+.mode-hint {
+  min-height: 34px;
+  margin-bottom: 18px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
 }
 
 .auth-btn {
