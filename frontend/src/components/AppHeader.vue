@@ -14,6 +14,7 @@
           Друзья <span v-if="friends.requests.length" class="request-badge">{{ friends.requests.length }}</span>
         </router-link>
         <router-link to="/favorites" class="nav-link">Избранное</router-link>
+        <router-link to="/ui/gallery" class="nav-link design-link">Дизайн</router-link>
         <router-link v-if="auth.user?.role === 'admin'" to="/admin" class="nav-link admin-link">Администратор</router-link>
       </nav>
 
@@ -80,6 +81,7 @@ function handleLogout() {
 }
 
 .admin-link { color: #f59e0b; }
+.design-link { color: #22d3ee; }
 
 .header-inner {
   max-width: 1200px;

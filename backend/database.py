@@ -1,5 +1,5 @@
 from fastapi import HTTPException, Request
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, declarative_base
 from config import DEMO_DATABASE_URL, WORK_DATABASE_URL
 
@@ -28,7 +28,18 @@ def get_app_mode(request: Request) -> str:
 
 
 def ensure_schema(target_engine):
-    """Apply small SQLite migrations without deleting existing data."""
+    """Apply small additive migrations without deleting existing data."""
+    inspector = inspect(target_engine)
+    if "users" not in inspector.get_table_names():
+        return
+    column_names = {column["name"] for column in inspector.get_columns("users")}
+
+    if "ui_style" not in column_names:
+        with target_engine.begin() as connection:
+            connection.exec_driver_sql(
+                "ALTER TABLE users ADD COLUMN ui_style VARCHAR NOT NULL DEFAULT 'classic'"
+            )
+
     if target_engine.dialect.name != "sqlite":
         return
     with target_engine.begin() as connection:

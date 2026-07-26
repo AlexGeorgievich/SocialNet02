@@ -6,6 +6,11 @@ const routes = [
   { path: '/register', name: 'Register', component: () => import('../views/RegisterView.vue'), meta: { guest: true } },
   { path: '/privacy', name: 'Privacy', component: () => import('../views/PrivacyView.vue') },
   { path: '/', name: 'Feed', component: () => import('../views/FeedView.vue'), meta: { auth: true } },
+  { path: '/ui/classic', redirect: '/' },
+  { path: '/ui/gallery', name: 'GalleryUI', component: () => import('../views/design/GalleryFeedView.vue'), meta: { auth: true, design: 'gallery' } },
+  { path: '/ui/neo', name: 'NeoUI', component: () => import('../views/design/NeoFeedView.vue'), meta: { auth: true, design: 'neo' } },
+  { path: '/ui/canvas', name: 'CanvasUI', component: () => import('../views/design/CanvasFeedView.vue'), meta: { auth: true, design: 'canvas' } },
+  { path: '/ui/:pathMatch(.*)*', redirect: '/' },
   { path: '/explore', name: 'Explore', component: () => import('../views/ExploreView.vue'), meta: { auth: true } },
   { path: '/profile/:id?', name: 'Profile', component: () => import('../views/ProfileView.vue'), meta: { auth: true } },
   { path: '/settings', name: 'Settings', component: () => import('../views/SettingsView.vue'), meta: { auth: true } },
@@ -21,12 +26,20 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
+  if (to.path === '/' && ['gallery', 'neo', 'canvas'].includes(to.query.ui)) {
+    return { path: `/ui/${to.query.ui}` }
+  }
   if (to.meta.auth && !auth.isLoggedIn) return { name: 'Login' }
   if (to.meta.guest && auth.isLoggedIn) return { name: 'Feed' }
   if (to.meta.admin) {
     if (!auth.user) await auth.fetchMe()
     if (auth.user?.role !== 'admin') return { name: 'Feed' }
   }
+})
+
+router.onError((error, to) => {
+  console.error('Ошибка загрузки интерфейса S-Art:', error)
+  if (to?.path?.startsWith('/ui/')) window.location.replace('/?design_fallback=1')
 })
 
 export default router

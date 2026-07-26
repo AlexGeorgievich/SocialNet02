@@ -25,6 +25,8 @@ def update_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    if data.ui_style is not None and data.ui_style not in {"classic", "gallery", "neo", "canvas"}:
+        raise HTTPException(status_code=400, detail="Неизвестный стиль интерфейса")
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(current_user, field, value)
     db.commit()

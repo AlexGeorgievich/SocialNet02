@@ -2,6 +2,22 @@
   <div class="settings-page">
     <h1 class="page-title">Настройки профиля</h1>
 
+    <section class="design-settings glass-card">
+      <div>
+        <h2>Оформление S-Art</h2>
+        <p>Каждый дизайн загружается отдельной страницей. Классический режим всегда остаётся резервным.</p>
+      </div>
+      <div class="design-controls">
+        <select v-model="designPreference" class="input" @change="saveDesign(designPreference)">
+          <option value="classic">Классический</option>
+          <option value="gallery">Digital Gallery</option>
+          <option value="neo">Neo-Art Studio</option>
+          <option value="canvas">Creative Canvas</option>
+        </select>
+        <button type="button" class="btn btn-primary" @click="openDesign">Открыть дизайн</button>
+      </div>
+    </section>
+
     <div class="settings-card glass-card">
       <div class="avatar-section">
         <img v-if="auth.user?.avatar_url" :src="auth.user.avatar_url" class="avatar avatar-large" />
@@ -47,8 +63,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import api from '../composables/useApi'
+import { useRouter } from 'vue-router'
+import { useDesignPreference } from '../composables/useDesignPreference'
 
 const auth = useAuthStore()
+const router = useRouter()
+const { designPreference, saveDesign } = useDesignPreference()
 
 const form = ref({ first_name: '', last_name: '', description: '', status: '' })
 const saving = ref(false)
@@ -100,9 +120,26 @@ async function handleAvatar(e) {
     message.value = 'Ошибка загрузки'
   }
 }
+
+function openDesign() {
+  router.push(designPreference.value === 'classic' ? '/' : `/ui/${designPreference.value}`)
+}
 </script>
 
 <style scoped>
+.design-settings {
+  max-width: 760px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.design-settings h2 { margin-bottom: 6px; font-size: 18px; }
+.design-settings p { max-width: 430px; color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
+.design-controls { display: grid; gap: 10px; min-width: 210px; }
+.design-controls .btn { justify-content: center; }
+
 .settings-card {
   max-width: 600px;
 }
@@ -150,5 +187,9 @@ async function handleAvatar(e) {
   padding: 8px;
   background: rgba(34, 197, 94, 0.1);
   border-radius: 8px;
+}
+@media (max-width: 650px) {
+  .design-settings { align-items: stretch; flex-direction: column; }
+  .design-controls { min-width: 0; }
 }
 </style>

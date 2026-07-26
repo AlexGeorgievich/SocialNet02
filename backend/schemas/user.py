@@ -21,6 +21,7 @@ class UserUpdate(BaseModel):
     last_name: Optional[str] = None
     description: Optional[str] = None
     status: Optional[str] = None
+    ui_style: Optional[str] = None
 
 
 class UserResponse(BaseModel):
@@ -32,6 +33,7 @@ class UserResponse(BaseModel):
     description: str
     status: str
     role: str = "user"
+    ui_style: str = "classic"
     privacy_consent: bool = False
     privacy_consent_version: str = ""
     privacy_consent_at: Optional[datetime] = None

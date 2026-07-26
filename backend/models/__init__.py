@@ -16,6 +16,7 @@ class User(Base):
     description = Column(Text, default="")
     status = Column(String, default="offline")
     role = Column(String, default="user", nullable=False)
+    ui_style = Column(String, default="classic", nullable=False)
     privacy_consent = Column(Boolean, default=False, nullable=False)
     privacy_consent_version = Column(String, default="", nullable=False)
     privacy_consent_at = Column(DateTime, nullable=True)
