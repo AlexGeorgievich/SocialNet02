@@ -10,7 +10,10 @@
         <div v-else class="avatar avatar-placeholder">{{ initials }}</div>
         <span>{{ post.user_first_name }} {{ post.user_last_name }}</span>
       </router-link>
-      <span class="tag">{{ categoryLabel }}</span>
+      <div class="post-meta">
+        <span class="tag">{{ categoryLabel }}</span>
+        <time v-if="post.created_at" :datetime="post.created_at" :title="absoluteTime">{{ relativeTime }}</time>
+      </div>
     </div>
     <div class="post-image-wrap">
       <img
@@ -107,6 +110,30 @@ const initials = computed(() => {
 })
 
 const categoryLabel = computed(() => getCategoryLabel(props.post.category))
+
+const postDate = computed(() => {
+  if (!props.post.created_at) return null
+  const value = props.post.created_at
+  return new Date(/[zZ]|[+-]\d\d:\d\d$/.test(value) ? value : `${value}Z`)
+})
+
+const relativeTime = computed(() => {
+  if (!postDate.value || Number.isNaN(postDate.value.getTime())) return ''
+  const seconds = Math.max(0, Math.floor((Date.now() - postDate.value.getTime()) / 1000))
+  if (seconds < 60) return 'только что'
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} мин назад`
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)} ч назад`
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)} дн назад`
+  return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'short' }).format(postDate.value)
+})
+
+const absoluteTime = computed(() => {
+  if (!postDate.value || Number.isNaN(postDate.value.getTime())) return ''
+  return new Intl.DateTimeFormat('ru-RU', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+  }).format(postDate.value)
+})
 </script>
 
 <style scoped>
@@ -126,6 +153,19 @@ const categoryLabel = computed(() => getCategoryLabel(props.post.category))
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
+}
+
+.post-meta {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.post-meta time {
+  color: var(--text-muted);
+  font-size: 10px;
+  white-space: nowrap;
 }
 
 .post-author {

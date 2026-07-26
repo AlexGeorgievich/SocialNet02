@@ -49,6 +49,15 @@ a.router-link-exact-active {
   color: #fff;
   background: linear-gradient(135deg, #7c3aed, #db2777);
 }
+:global(:root[data-theme='light']) .design-switcher {
+  border-color: rgba(67, 48, 78, .16);
+  background: rgba(255, 252, 247, .9);
+  box-shadow: 0 10px 30px rgba(70, 50, 80, .1);
+}
+:global(:root[data-theme='light']) .switcher-label { color: #74667c; }
+:global(:root[data-theme='light']) a { color: #5f5268; }
+:global(:root[data-theme='light']) a:hover { color: #251d2b; background: rgba(70,45,80,.08); }
+:global(:root[data-theme='light']) a.router-link-exact-active { color: #fff; }
 @media (max-width: 600px) {
   .switcher-label { display: none; }
 }

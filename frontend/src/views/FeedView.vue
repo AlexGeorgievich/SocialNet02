@@ -1,6 +1,6 @@
 <template>
   <div class="feed-page">
-    <h1 class="page-title">Лента</h1>
+    <h1 class="page-title">Последние работы</h1>
 
     <div class="filters glass-card">
       <button
