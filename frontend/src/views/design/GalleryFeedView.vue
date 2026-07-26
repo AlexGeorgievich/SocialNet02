@@ -69,5 +69,18 @@ onMounted(() => saveDesign('gallery'))
 :global(:root:not([data-theme='light'])) .gallery-grid :deep(.post-author),
 :global(:root:not([data-theme='light'])) .gallery-grid :deep(.post-desc) { color:#afa5b1; }
 :global(:root:not([data-theme='light'])) .gallery-grid :deep(.tag) { color:#c3b9c5; border-color:#4c454f; }
+
+/* Opaque museum palettes: warm paper by day, charcoal exhibition hall by night. */
+:global(:root[data-theme='light']) .gallery-page { color:#211e22; background:#f1eee8; color-scheme:light; }
+:global(:root[data-theme='light']) .gallery-hero { border-color:#bdb4a9; }
+:global(:root[data-theme='light']) .gallery-hero span,
+:global(:root[data-theme='light']) .latest-note { color:#625a55; }
+:global(:root[data-theme='light']) .gallery-grid :deep(.post-card) { color:#211e22; border:1px solid #d2cbc2; background:#fffdfa; }
+:global(:root[data-theme='light']) .gallery-grid :deep(.post-card:hover) { border-color:#aaa096; background:#fff; }
+:global(:root[data-theme='light']) .gallery-grid :deep(.post-author),
+:global(:root[data-theme='light']) .gallery-grid :deep(.post-desc),
+:global(:root[data-theme='light']) .gallery-grid :deep(.post-meta time) { color:#5e565d; }
+:global(:root:not([data-theme='light'])) .gallery-page { color-scheme:dark; }
+:global(:root:not([data-theme='light'])) .gallery-grid :deep(.post-meta time) { color:#b7acb8; }
 @media(max-width:650px){.gallery-page{margin:-8px;padding:12px}.gallery-hero{align-items:flex-start;flex-direction:column}.gallery-grid{grid-template-columns:1fr}}
 </style>

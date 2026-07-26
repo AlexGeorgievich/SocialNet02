@@ -59,5 +59,19 @@ onMounted(() => saveDesign('canvas'))
 :global(:root:not([data-theme='light'])) .latest-note { color:#b8a99b; }
 :global(:root:not([data-theme='light'])) .canvas-grid :deep(.post-card) { color:#3f352f; border-color:#d9cbb3; background:#d9cbb3; box-shadow:5px 8px 18px rgba(0,0,0,.35); }
 :global(:root:not([data-theme='light'])) .canvas-grid :deep(.post-card:hover) { border-color:#eadcc5; background:#eadcc5; }
+
+/* Sketchbook palettes: sunlit kraft paper and a dark studio desk. */
+:global(:root[data-theme='light']) .canvas-page { color:#382e27; background-color:#d8c8ac; background-image:linear-gradient(rgba(82,62,45,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(82,62,45,.09) 1px,transparent 1px); color-scheme:light; }
+:global(:root[data-theme='light']) .canvas-hero { color:#382e27; background:#fff8e9; }
+:global(:root[data-theme='light']) .canvas-hero span { color:#75442f; }
+:global(:root[data-theme='light']) .canvas-hero p,
+:global(:root[data-theme='light']) .latest-note { color:#645449; }
+:global(:root[data-theme='light']) .canvas-grid :deep(.post-card) { color:#382e27; border-color:#fff8e9; background:#fff8e9; }
+:global(:root[data-theme='light']) .canvas-grid :deep(.post-author),
+:global(:root[data-theme='light']) .canvas-grid :deep(.post-desc),
+:global(:root[data-theme='light']) .canvas-grid :deep(.post-meta time) { color:#625247; }
+:global(:root[data-theme='light']) .canvas-grid :deep(.tag) { color:#4f382a; background:#ead08a; }
+:global(:root:not([data-theme='light'])) .canvas-page { color-scheme:dark; }
+:global(:root:not([data-theme='light'])) .canvas-grid :deep(.post-meta time) { color:#5f5045; }
 @media(max-width:650px){.canvas-page{margin:-8px;padding:12px}.canvas-hero{padding:30px 18px}.canvas-grid{grid-template-columns:1fr}}
 </style>

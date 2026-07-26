@@ -23,7 +23,7 @@ const { saveDesign } = useDesignPreference()
   overflow-x: auto;
   border: 1px solid rgba(128, 112, 150, .2);
   border-radius: 12px;
-  background: rgba(18, 14, 25, .82);
+  background: #17121f;
   box-shadow: 0 10px 35px rgba(0, 0, 0, .18);
 }
 .switcher-label {
@@ -50,8 +50,8 @@ a.router-link-exact-active {
   background: linear-gradient(135deg, #7c3aed, #db2777);
 }
 :global(:root[data-theme='light']) .design-switcher {
-  border-color: rgba(67, 48, 78, .16);
-  background: rgba(255, 252, 247, .9);
+  border-color: #d8d0dc;
+  background: #fffdf9;
   box-shadow: 0 10px 30px rgba(70, 50, 80, .1);
 }
 :global(:root[data-theme='light']) .switcher-label { color: #74667c; }

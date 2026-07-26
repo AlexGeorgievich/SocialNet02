@@ -63,5 +63,22 @@ onMounted(() => saveDesign('neo'))
 :global(:root[data-theme='light']) .neo-grid :deep(.post-card:hover) { border-color:#9b6ad0; background:#fff; box-shadow:0 15px 40px rgba(80,50,100,.14); }
 :global(:root[data-theme='light']) .neo-grid :deep(.post-author),
 :global(:root[data-theme='light']) .neo-grid :deep(.post-desc) { color:#74677d; }
+
+/* High-contrast synth palettes without translucent white surfaces. */
+:global(:root[data-theme='light']) .neo-page { color:#241b2d; border-color:#bfb0cb; background:radial-gradient(circle at 85% 5%,rgba(8,127,140,.14),transparent 28%),radial-gradient(circle at 12% 12%,rgba(167,25,98,.13),transparent 30%),#f3f0f7; color-scheme:light; }
+:global(:root[data-theme='light']) .neo-hero span { color:#087783; }
+:global(:root[data-theme='light']) .neo-hero p,
+:global(:root[data-theme='light']) .latest-note { color:#5f5269; }
+:global(:root[data-theme='light']) .neo-add { color:#fff; border-color:#a71962; background:#a71962; box-shadow:none; }
+:global(:root[data-theme='light']) .neo-filters button { color:#564961; border-color:#c9bdd2; background:#fff; }
+:global(:root[data-theme='light']) .neo-filters button:hover { border-color:#087f8c; }
+:global(:root[data-theme='light']) .neo-filters button.active { color:#fff; border-color:#087f8c; background:#087f8c; }
+:global(:root[data-theme='light']) .neo-grid :deep(.post-card) { color:#241b2d; border-color:#cfc3d9; background:#fff; }
+:global(:root[data-theme='light']) .neo-grid :deep(.post-author),
+:global(:root[data-theme='light']) .neo-grid :deep(.post-desc),
+:global(:root[data-theme='light']) .neo-grid :deep(.post-meta time) { color:#5f5269; }
+:global(:root[data-theme='light']) .neo-grid :deep(.tag) { color:#086f79; border-color:#087f8c; background:#f0fbfc; }
+:global(:root:not([data-theme='light'])) .neo-page { color-scheme:dark; }
+:global(:root:not([data-theme='light'])) .neo-grid :deep(.post-meta time) { color:#b6a9c3; }
 @media(max-width:720px){.neo-page{margin:-8px;padding:12px}.neo-hero{grid-template-columns:1fr}.neo-orb{display:none}.neo-grid{grid-template-columns:1fr}}
 </style>
