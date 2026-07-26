@@ -43,5 +43,6 @@ echo.
 echo Do not run "npm run dev" at the same time:
 echo Vite would move to ports 5174, 5175, and so on.
 echo.
+start "" "http://localhost:5173/?build=classic-stable"
 pause
 endlocal

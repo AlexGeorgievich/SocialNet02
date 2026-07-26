@@ -18,17 +18,6 @@
       </nav>
 
       <div class="header-right">
-        <button
-          class="gui-toggle"
-          type="button"
-          :disabled="isSwitchingGui"
-          :aria-busy="isSwitchingGui"
-          :title="isGallery ? 'Вернуть классический интерфейс' : 'Открыть интерфейс цифровой галереи'"
-          @click="toggleGuiStyle"
-        >
-          <span>{{ isGallery ? '▦' : '◫' }}</span>
-          <span class="gui-label">{{ isGallery ? 'Классический' : 'Галерея' }}</span>
-        </button>
         <button class="theme-toggle" type="button" @click="toggleTheme" :title="isDark ? 'Включить светлую тему' : 'Включить тёмную тему'">
           <span>{{ isDark ? '☀️' : '🌙' }}</span>
           <span class="theme-label">{{ isDark ? 'Светлая' : 'Тёмная' }}</span>
@@ -57,14 +46,12 @@ import { useAuthStore } from '../stores/auth'
 import { useTheme } from '../composables/useTheme'
 import { useFriendsStore } from '../stores/friends'
 import { useAppMode } from '../composables/useAppMode'
-import { useGuiStyle } from '../composables/useGuiStyle'
 
 const auth = useAuthStore()
 const router = useRouter()
 const { isDark, toggleTheme } = useTheme()
 const friends = useFriendsStore()
 const { appMode } = useAppMode()
-const { isGallery, isSwitchingGui, toggleGuiStyle } = useGuiStyle()
 
 onMounted(() => friends.fetchRequests())
 
@@ -162,8 +149,7 @@ function handleLogout() {
   gap: 12px;
 }
 
-.theme-toggle,
-.gui-toggle {
+.theme-toggle {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -177,9 +163,7 @@ function handleLogout() {
   cursor: pointer;
 }
 
-.theme-toggle:hover,
-.gui-toggle:hover { border-color: var(--accent-purple); }
-.gui-toggle:disabled { opacity: .65; cursor: wait; }
+.theme-toggle:hover { border-color: var(--accent-purple); }
 
 .user-menu {
   text-decoration: none;
@@ -203,6 +187,5 @@ function handleLogout() {
     display: none;
   }
   .theme-label { display: none; }
-  .gui-label { display: none; }
 }
 </style>
