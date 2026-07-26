@@ -95,6 +95,43 @@ body::before {
   background: var(--header-bg);
 }
 
+/*
+ * Theme safety reset.
+ *
+ * The light palette must never be implemented as a translucent layer over the
+ * dark interface. Keeping the rendering roots opaque also protects the whole
+ * GUI from a stale opacity/filter left by a route or theme transition.
+ */
+:root[data-theme='light'],
+:root[data-theme='light'] body,
+:root[data-theme='light'] #app,
+:root[data-theme='light'] .app,
+:root[data-theme='light'] .main-content,
+:root[data-theme='light'] .gallery-page,
+:root[data-theme='light'] .neo-page,
+:root[data-theme='light'] .canvas-page {
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+:root[data-theme='light'] body::before,
+:root[data-theme='light'] body::after,
+:root[data-theme='light'] #app::before,
+:root[data-theme='light'] #app::after,
+:root[data-theme='light'] .app::before,
+:root[data-theme='light'] .app::after {
+  display: none !important;
+  content: none !important;
+}
+
+:root[data-theme='light'] #app {
+  min-height: 100vh;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  color-scheme: light;
+}
+
 @keyframes bgFloat {
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
   33% { transform: translate(2%, -2%) rotate(1deg); }
