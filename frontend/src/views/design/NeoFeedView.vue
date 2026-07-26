@@ -65,6 +65,7 @@ onMounted(() => saveDesign('neo'))
 :global(:root[data-theme='light']) .neo-grid :deep(.post-desc) { color:#74677d; }
 
 /* High-contrast synth palettes without translucent white surfaces. */
+.neo-page { opacity:1; filter:none; mix-blend-mode:normal; isolation:isolate; }
 :global(:root[data-theme='light']) .neo-page { color:#241b2d; border-color:#bfb0cb; background:radial-gradient(circle at 85% 5%,rgba(8,127,140,.14),transparent 28%),radial-gradient(circle at 12% 12%,rgba(167,25,98,.13),transparent 30%),#f3f0f7; color-scheme:light; }
 :global(:root[data-theme='light']) .neo-hero span { color:#087783; }
 :global(:root[data-theme='light']) .neo-hero p,

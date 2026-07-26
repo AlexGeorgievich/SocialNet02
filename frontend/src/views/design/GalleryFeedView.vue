@@ -71,6 +71,7 @@ onMounted(() => saveDesign('gallery'))
 :global(:root:not([data-theme='light'])) .gallery-grid :deep(.tag) { color:#c3b9c5; border-color:#4c454f; }
 
 /* Opaque museum palettes: warm paper by day, charcoal exhibition hall by night. */
+.gallery-page { opacity:1; filter:none; mix-blend-mode:normal; isolation:isolate; }
 :global(:root[data-theme='light']) .gallery-page { color:#211e22; background:#f1eee8; color-scheme:light; }
 :global(:root[data-theme='light']) .gallery-hero { border-color:#bdb4a9; }
 :global(:root[data-theme='light']) .gallery-hero span,
