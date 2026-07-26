@@ -203,6 +203,10 @@ POSTGRES_PASSWORD=длинный-случайный-пароль
 docker compose up -d --build
 ```
 
+В Windows ту же Docker-команду можно запустить двойным щелчком по `start.bat`.
+Сценарий не запускает отдельные Vite/Uvicorn-процессы, поэтому frontend всегда
+остаётся на `http://localhost:5173/`.
+
 Первый запуск:
 
 1. создаёт volumes и сеть;

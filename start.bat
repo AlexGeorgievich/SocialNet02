@@ -1,41 +1,47 @@
 @echo off
 chcp 65001 >nul
-set "PYTHONUTF8=1"
-set "PYTHONIOENCODING=utf-8"
-echo === S-Art ===
+setlocal
+cd /d "%~dp0"
+
+echo === S-Art: Docker startup ===
 echo.
 
-echo [1/4] Installing backend dependencies...
-cd /d "%~dp0backend"
-python -m pip install -r requirements.txt
+where docker >nul 2>nul
 if errorlevel 1 (
-    echo ERROR: Failed to install backend dependencies
+    echo ERROR: Docker is not installed or is unavailable in PATH.
+    echo Install and start Docker Desktop, then run start.bat again.
     pause
     exit /b 1
 )
-cd /d "%~dp0"
 
-echo [2/4] Installing frontend dependencies...
-cd /d "%~dp0frontend"
-call npm install
+docker info >nul 2>nul
 if errorlevel 1 (
-    echo ERROR: Failed to install frontend dependencies
+    echo ERROR: Docker Desktop is not running.
+    echo Start Docker Desktop, wait until it is ready, then run start.bat again.
     pause
     exit /b 1
 )
-cd /d "%~dp0"
 
-echo [3/4] Starting backend on http://localhost:8000 ...
-start "S-Art Backend" cmd /k "chcp 65001 >nul && cd /d "%~dp0backend" && set PYTHONUTF8=1 && set PYTHONIOENCODING=utf-8 && python main.py"
+echo [1/2] Building and starting PostgreSQL, Redis, backend and frontend...
+docker compose up -d --build
+if errorlevel 1 (
+    echo ERROR: Failed to start Docker services.
+    pause
+    exit /b 1
+)
 
-echo [4/4] Starting frontend on http://localhost:5173 ...
-start "S-Art Frontend" cmd /k "chcp 65001 >nul && cd /d "%~dp0frontend" && npm run dev"
+echo [2/2] Checking services...
+docker compose ps
 
 echo.
 echo ========================================
-echo   Both servers are starting!
-echo   Backend:  http://localhost:8000
-echo   Frontend: http://localhost:5173
+echo   S-Art is ready
+echo   Application: http://localhost:5173/
+echo   API:         http://localhost:8000/
 echo ========================================
+echo.
+echo Do not run "npm run dev" at the same time:
+echo Vite would move to ports 5174, 5175, and so on.
 echo.
 pause
+endlocal
